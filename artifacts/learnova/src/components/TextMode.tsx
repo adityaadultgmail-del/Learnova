@@ -157,9 +157,13 @@ export function TextMode() {
       )}
       </div>
 
-      {/* Hidden PDF Template */}
-      <div className="hidden print:block print:absolute print:inset-0 print:bg-white print:z-50">
-         <PdfTemplate topic={topic} notes={result?.notes || ""} />
+      {/* Hidden PDF Template — shown only when printing */}
+      <div
+        id="pdf-print-root"
+        className="hidden print:block"
+        style={{ display: 'none' }}
+      >
+        <PdfTemplate topic={topic} notes={result?.notes || ""} />
       </div>
     </>
   );
