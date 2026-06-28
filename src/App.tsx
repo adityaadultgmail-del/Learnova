@@ -1,0 +1,29 @@
+import { Routes, Route } from "react-router-dom";
+import { Layout } from "./components/Layout";
+import { Home } from "./components/Home";
+import { TextMode } from "./components/TextMode";
+import { VoiceMode } from "./components/VoiceMode";
+import { AdminPanel } from "./components/AdminPanel";
+import { DoubtSolving } from "./components/DoubtSolving";
+import { StudyPlans } from "./components/StudyPlans";
+import { SmartRevision } from "./components/SmartRevision";
+import { AuthProvider } from "./lib/auth";
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="text" element={<TextMode />} />
+          <Route path="voice" element={<VoiceMode />} />
+          <Route path="admin" element={<AdminPanel />} />
+          <Route path="doubt-solving" element={<DoubtSolving />} />
+          <Route path="study-plans" element={<StudyPlans />} />
+          <Route path="smart-revision" element={<SmartRevision />} />
+        </Route>
+      </Routes>
+    </AuthProvider>
+  );
+}
+

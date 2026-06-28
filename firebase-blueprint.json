@@ -1,0 +1,49 @@
+{
+  "schemas": {
+    "users": {
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "description": "admin or user" },
+        "premiumStatus": { "type": "string", "description": "none, pending, approved" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["uid", "email", "role", "premiumStatus", "createdAt"]
+    },
+    "premiumRequests": {
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "status": { "type": "string", "description": "pending, approved, rejected" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["userId", "userEmail", "status", "createdAt"]
+    },
+    "quizzes": {
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "topic": { "type": "string" },
+        "examGoal": { "type": "string" },
+        "score": { "type": "number" },
+        "totalQuestions": { "type": "number" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["userId", "topic", "examGoal", "createdAt"]
+    },
+    "doubts": {
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "question": { "type": "string" },
+        "answer": { "type": "string" },
+        "status": { "type": "string", "description": "pending, answered" },
+        "createdAt": { "type": "timestamp" }
+      },
+      "required": ["userId", "question", "status", "createdAt"]
+    }
+  }
+}

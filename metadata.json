@@ -1,0 +1,6 @@
+{
+  "name": "Learnova",
+  "description": "An interactive, AI-powered study platform with Text Mode and Voice Mode for optimal learning.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
