@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import { motion } from "motion/react";
 import { Search, Loader2, Youtube, FileText, Download, CheckCircle2 } from "lucide-react";
 import Markdown from "react-markdown";
-import html2pdf from "html2pdf.js";
 import { useAuth } from "../lib/auth";
 import { db } from "../lib/firebase";
 import { collection, addDoc } from "firebase/firestore";
@@ -39,21 +38,13 @@ export function TextMode() {
   };
 
   const downloadPDF = () => {
-    const element = document.getElementById('pdf-template');
-    if (!element) return;
-    const opt = {
-      margin:       0,
-      filename:     `${topic.replace(/\s+/g, '_')}_notes.pdf`,
-      image:        { type: 'jpeg' as const, quality: 0.98 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' as const }
-    };
-    html2pdf().set(opt).from(element).save();
+    window.print();
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
-      <motion.div 
+    <>
+      <div className="max-w-5xl mx-auto space-y-8 print:hidden">
+        <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className="glass rounded-3xl p-8"
@@ -135,12 +126,13 @@ export function TextMode() {
           </div>
         </motion.div>
       )}
+      </div>
 
       {/* Hidden PDF Template */}
-      <div className="absolute left-[-9999px] top-[-9999px]">
+      <div className="hidden print:block print:absolute print:inset-0 print:bg-white print:z-50">
          <PdfTemplate topic={topic} notes={result?.notes || ""} />
       </div>
-    </div>
+    </>
   );
 }
 
