@@ -1,13 +1,27 @@
 import { Router, type IRouter } from "express";
-import { GoogleGenAI } from "@google/genai";
+import Groq from "groq-sdk";
 
 const router: IRouter = Router();
 
-function getGenAI() {
-  if (!process.env.GEMINI_API_KEY) {
-    throw new Error("GEMINI_API_KEY environment variable is missing.");
+const MODEL = "llama-3.3-70b-versatile";
+
+function getGroq() {
+  if (!process.env.GROQ_API_KEY) {
+    throw new Error("GROQ_API_KEY environment variable is missing.");
   }
-  return new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  return new Groq({ apiKey: process.env.GROQ_API_KEY });
+}
+
+async function chat(groq: Groq, systemPrompt: string, userPrompt: string, jsonMode = false) {
+  const response = await groq.chat.completions.create({
+    model: MODEL,
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ],
+    ...(jsonMode ? { response_format: { type: "json_object" } } : {}),
+  });
+  return response.choices[0]?.message?.content ?? "";
 }
 
 router.post("/study/text", async (req, res) => {
@@ -16,26 +30,21 @@ router.post("/study/text", async (req, res) => {
     if (!topic) {
       return res.status(400).json({ error: "Topic is required" });
     }
-    const ai = getGenAI();
-    const prompt = `You are a study assistant. The user wants to study the topic: "${topic}".
-      Provide 3 things in valid JSON format:
-      {
-        "youtubeSuggestions": [
-          {"title": "Video title 1", "url": "https://youtube.com/watch?v=..."},
-          {"title": "Video title 2", "url": "https://youtube.com/watch?v=..."},
-          {"title": "Video title 3", "url": "https://youtube.com/watch?v=..."}
-        ],
-        "notes": "A comprehensive set of study notes on the topic. Use markdown formatting. Include headings, bullet points, and key concepts.",
-        "quizTopic": "A brief summary of the topic to generate quizzes on later."
-      }
-      Important: Return ONLY the JSON object, no markdown code block wrappers (do not use \`\`\`json).`;
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: { responseMimeType: "application/json" }
-    });
-    if (!response.text) throw new Error("No response from AI");
-    const data = JSON.parse(response.text);
+    const groq = getGroq();
+    const system = `You are a study assistant. Always respond with valid JSON only — no markdown wrappers, no extra text.`;
+    const user = `The user wants to study: "${topic}".
+Return a JSON object with exactly these fields:
+{
+  "youtubeSuggestions": [
+    {"title": "Video title 1", "url": "https://youtube.com/watch?v=XXXXXXXXXXX"},
+    {"title": "Video title 2", "url": "https://youtube.com/watch?v=XXXXXXXXXXX"},
+    {"title": "Video title 3", "url": "https://youtube.com/watch?v=XXXXXXXXXXX"}
+  ],
+  "notes": "Comprehensive study notes in markdown. Include headings, bullet points, and key concepts.",
+  "quizTopic": "A brief summary of the topic to generate quizzes on later."
+}`;
+    const text = await chat(groq, system, user, true);
+    const data = JSON.parse(text);
     res.json(data);
   } catch (error: any) {
     req.log.error({ err: error }, "Error in /api/study/text");
@@ -49,28 +58,22 @@ router.post("/study/quiz", async (req, res) => {
     if (!topic || !examGoal || !numQuestions) {
       return res.status(400).json({ error: "Missing required fields" });
     }
-    const ai = getGenAI();
-    const prompt = `You are an expert examiner for the ${examGoal} exam. 
-      Create a ${numQuestions}-question multiple-choice quiz on the topic: "${topic}".
-      Provide the output in valid JSON format:
-      {
-        "questions": [
-          {
-            "question": "Question text here?",
-            "options": ["Option A", "Option B", "Option C", "Option D"],
-            "correctAnswerIndex": 0,
-            "explanation": "Explanation of the correct answer."
-          }
-        ]
-      }
-      Important: Return ONLY the JSON object, no markdown wrappers (do not use \`\`\`json).`;
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: { responseMimeType: "application/json" }
-    });
-    if (!response.text) throw new Error("No response from AI");
-    const data = JSON.parse(response.text);
+    const groq = getGroq();
+    const system = `You are an expert examiner. Always respond with valid JSON only — no markdown wrappers, no extra text.`;
+    const user = `Create a ${numQuestions}-question multiple-choice quiz for the ${examGoal} exam on: "${topic}".
+Return a JSON object:
+{
+  "questions": [
+    {
+      "question": "Question text here?",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correctAnswerIndex": 0,
+      "explanation": "Why this answer is correct."
+    }
+  ]
+}`;
+    const text = await chat(groq, system, user, true);
+    const data = JSON.parse(text);
     res.json(data);
   } catch (error: any) {
     req.log.error({ err: error }, "Error in /api/study/quiz");
@@ -84,17 +87,12 @@ router.post("/study/voice", async (req, res) => {
     if (!text) {
       return res.status(400).json({ error: "Text is required" });
     }
-    const ai = getGenAI();
-    const prompt = `You are a friendly, conversational voice AI tutor. 
-      Keep your responses concise, conversational, and easy to understand when spoken aloud.
-      Do not use complex markdown (like tables) since this will be read by a text-to-speech engine.
-      
-      User says: "${text}"`;
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-    });
-    res.json({ text: response.text });
+    const groq = getGroq();
+    const system = `You are a friendly, conversational voice AI tutor. 
+Keep responses concise and easy to understand when spoken aloud.
+Avoid complex markdown — no tables, no code blocks — since this will be read by text-to-speech.`;
+    const reply = await chat(groq, system, text);
+    res.json({ text: reply });
   } catch (error: any) {
     req.log.error({ err: error }, "Error in /api/study/voice");
     res.status(500).json({ error: error.message || "Internal server error" });
@@ -107,13 +105,10 @@ router.post("/study/doubt", async (req, res) => {
     if (!doubt) {
       return res.status(400).json({ error: "Doubt is required" });
     }
-    const ai = getGenAI();
-    const prompt = `You are an expert AI tutor helping a student. Answer this doubt clearly and concisely: ${doubt}`;
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-    });
-    res.json({ text: response.text });
+    const groq = getGroq();
+    const system = `You are an expert AI tutor. Answer student doubts clearly, concisely, and with examples where helpful.`;
+    const reply = await chat(groq, system, doubt);
+    res.json({ text: reply });
   } catch (error: any) {
     req.log.error({ err: error }, "Error in /api/study/doubt");
     res.status(500).json({ error: error.message || "Internal server error" });
@@ -126,13 +121,11 @@ router.post("/study/plan", async (req, res) => {
     if (!topic || !timeframe) {
       return res.status(400).json({ error: "Topic and timeframe are required" });
     }
-    const ai = getGenAI();
-    const prompt = `Create a highly structured and detailed study plan for "${topic}" over a period of ${timeframe}. Break it down by days or weeks. Include specific topics to cover, practice suggestions, and revision strategies. Format it beautifully using Markdown with clear headings.`;
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-    });
-    res.json({ plan: response.text });
+    const groq = getGroq();
+    const system = `You are an expert study planner. Create detailed, structured, and motivating study plans in Markdown.`;
+    const user = `Create a study plan for "${topic}" over ${timeframe}. Break it down by days/weeks. Include specific topics, practice suggestions, and revision strategies. Use clear Markdown headings.`;
+    const reply = await chat(groq, system, user);
+    res.json({ plan: reply });
   } catch (error: any) {
     req.log.error({ err: error }, "Error in /api/study/plan");
     res.status(500).json({ error: error.message || "Internal server error" });
@@ -145,23 +138,19 @@ router.post("/study/flashcards", async (req, res) => {
     if (!topic) {
       return res.status(400).json({ error: "Topic is required" });
     }
-    const ai = getGenAI();
-    const prompt = `Generate 10 highly effective spaced-repetition flashcards for the topic: "${topic}". Return ONLY a valid JSON array of objects, where each object has a "question" string and an "answer" string. Do not include any markdown formatting or extra text outside the JSON array.`;
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: { responseMimeType: "application/json" }
-    });
-    if (!response.text) throw new Error("No response from AI");
-    let data;
-    try {
-      data = JSON.parse(response.text);
-    } catch (e) {
-      let text = response.text.trim();
-      if (text.startsWith('```json')) text = text.slice(7, -3);
-      data = JSON.parse(text);
-    }
-    res.json({ cards: data });
+    const groq = getGroq();
+    const system = `You are a flashcard generator. Always respond with valid JSON only — no markdown wrappers, no extra text.`;
+    const user = `Generate 10 spaced-repetition flashcards for: "${topic}".
+Return a JSON object:
+{
+  "cards": [
+    {"question": "Q1?", "answer": "A1"},
+    {"question": "Q2?", "answer": "A2"}
+  ]
+}`;
+    const text = await chat(groq, system, user, true);
+    const data = JSON.parse(text);
+    res.json({ cards: data.cards ?? data });
   } catch (error: any) {
     req.log.error({ err: error }, "Error in /api/study/flashcards");
     res.status(500).json({ error: error.message || "Internal server error" });
