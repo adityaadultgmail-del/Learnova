@@ -58,7 +58,6 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       
-      // Ensure user document exists (fallback if onAuthStateChanged is slow)
       const u = result.user;
       const userRef = doc(db, 'users', u.uid);
       const docSnap = await getDoc(userRef);
@@ -93,46 +92,46 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl relative border border-slate-100 text-center"
+            className="bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-sm w-full shadow-2xl relative border border-slate-100 dark:border-slate-700 text-center"
           >
             <button 
               onClick={onClose}
-              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <h2 className="text-2xl font-bold text-slate-800 mb-2">
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </h2>
-            <p className="text-sm text-slate-500 mb-6">Sign in to access quizzes, voice mode, and premium features.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">Sign in to access quizzes, voice mode, and premium features.</p>
 
             {error && (
-              <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 text-left">
+              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-sm rounded-xl border border-red-100 dark:border-red-800 text-left">
                 {error}
               </div>
             )}
 
             <form onSubmit={handleEmailAuth} className="space-y-4 mb-4 text-left">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
                 <input 
                   type="email" 
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-secondary-500 focus:ring-2 focus:ring-secondary-200 transition-all"
+                  className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-xl px-4 py-3 outline-none focus:border-secondary-500 focus:ring-2 focus:ring-secondary-200 dark:focus:ring-secondary-800 transition-all"
                   placeholder="name@example.com"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Password</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Password</label>
                 <input 
                   type="password" 
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-secondary-500 focus:ring-2 focus:ring-secondary-200 transition-all"
+                  className="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-xl px-4 py-3 outline-none focus:border-secondary-500 focus:ring-2 focus:ring-secondary-200 dark:focus:ring-secondary-800 transition-all"
                   placeholder="••••••••"
                 />
               </div>
@@ -146,15 +145,15 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =
             </form>
 
             <div className="relative flex py-2 items-center mb-4">
-              <div className="flex-grow border-t border-slate-200"></div>
-              <span className="flex-shrink-0 mx-4 text-slate-400 text-sm">or</span>
-              <div className="flex-grow border-t border-slate-200"></div>
+              <div className="flex-grow border-t border-slate-200 dark:border-slate-600"></div>
+              <span className="flex-shrink-0 mx-4 text-slate-400 dark:text-slate-500 text-sm">or</span>
+              <div className="flex-grow border-t border-slate-200 dark:border-slate-600"></div>
             </div>
 
             <button 
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-3"
+              className="w-full bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-3 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-3"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                 <>
@@ -181,11 +180,11 @@ export function LoginModal({ isOpen, onClose }: { isOpen: boolean, onClose: () =
               )}
             </button>
 
-            <div className="mt-6 text-center text-sm text-slate-500">
+            <div className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
               {isLogin ? "Don't have an account? " : "Already have an account? "}
               <button 
                 onClick={() => setIsLogin(!isLogin)}
-                className="font-bold text-secondary-600 hover:text-secondary-700 hover:underline"
+                className="font-bold text-secondary-600 dark:text-secondary-400 hover:text-secondary-700 hover:underline"
               >
                 {isLogin ? 'Sign Up' : 'Sign In'}
               </button>

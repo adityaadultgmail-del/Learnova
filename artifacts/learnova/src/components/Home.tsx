@@ -74,7 +74,7 @@ export function Home() {
       <section className="max-w-5xl mx-auto pt-12">
         <div className="flex items-center justify-center gap-3 mb-10">
           <Crown className="w-6 h-6 text-primary-500" />
-          <h2 className="text-3xl font-bold text-slate-800 text-center">Premium Features</h2>
+          <h2 className="text-3xl font-bold text-slate-800 dark:text-slate-100 text-center">Premium Features</h2>
         </div>
         
         <div className="grid md:grid-cols-3 gap-6">
@@ -108,18 +108,18 @@ export function Home() {
 function PremiumCard({ icon, title, desc, isUnlocked, path }: { icon: React.ReactNode, title: string, desc: string, isUnlocked: boolean, path: string }) {
   if (isUnlocked) {
     return (
-      <Link to={path} className="bg-gradient-to-br from-primary-50 to-white border border-primary-100 p-5 rounded-2xl flex flex-col gap-3 relative overflow-hidden select-none shadow-sm hover:shadow-md transition-all cursor-pointer group block">
+      <Link to={path} className="bg-gradient-to-br from-primary-50 to-white dark:from-slate-800 dark:to-slate-700 border border-primary-100 dark:border-slate-600 p-5 rounded-2xl flex flex-col gap-3 relative overflow-hidden select-none shadow-sm hover:shadow-md transition-all cursor-pointer group block">
         <div className="flex items-center justify-between">
-           <span className="text-xs font-bold text-primary-600 bg-primary-100 px-2 py-1 rounded-md uppercase tracking-wider">Unlocked</span>
+           <span className="text-xs font-bold text-primary-600 dark:text-primary-300 bg-primary-100 dark:bg-primary-900/40 px-2 py-1 rounded-md uppercase tracking-wider">Unlocked</span>
            <Unlock className="w-4 h-4 text-primary-400 group-hover:text-primary-600 transition-colors" />
         </div>
         <div className="text-left mt-2 flex flex-col gap-2">
-          <div className="w-10 h-10 rounded-xl bg-primary-100 text-primary-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-300 flex items-center justify-center">
             {icon}
           </div>
           <div>
-            <h4 className="font-bold text-slate-800 text-lg">{title}</h4>
-            <p className="text-sm text-slate-600 mt-1">{desc}</p>
+            <h4 className="font-bold text-slate-800 dark:text-slate-100 text-lg">{title}</h4>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{desc}</p>
           </div>
         </div>
       </Link>
@@ -127,14 +127,14 @@ function PremiumCard({ icon, title, desc, isUnlocked, path }: { icon: React.Reac
   }
 
   return (
-    <div className="bg-white/50 backdrop-blur-sm border border-white p-5 rounded-2xl flex flex-col gap-3 relative overflow-hidden select-none">
+    <div className="bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border border-white dark:border-slate-700 p-5 rounded-2xl flex flex-col gap-3 relative overflow-hidden select-none">
       <div className="flex items-center justify-between">
-         <span className="text-xs font-bold text-secondary-600 bg-secondary-50 px-2 py-1 rounded-md uppercase tracking-wider">Locked</span>
+         <span className="text-xs font-bold text-secondary-600 dark:text-secondary-400 bg-secondary-50 dark:bg-secondary-900/30 px-2 py-1 rounded-md uppercase tracking-wider">Locked</span>
          <Lock className="w-4 h-4 text-slate-400" />
       </div>
       <div className="filter blur-[2px] text-left">
-        <h4 className="font-bold text-slate-700">{title}</h4>
-        <p className="text-xs text-slate-400 mt-1">{desc}</p>
+        <h4 className="font-bold text-slate-700 dark:text-slate-300">{title}</h4>
+        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{desc}</p>
       </div>
     </div>
   );

@@ -47,19 +47,19 @@ export function StudyPlans() {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="flex items-center gap-4 mb-2">
-        <Link to="/" className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-500">
+        <Link to="/" className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-500 dark:text-slate-400">
           <ArrowLeft className="w-6 h-6" />
         </Link>
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-800">Personalized Study Plans</h1>
-          <p className="text-slate-500 mt-1">Get an AI-generated roadmap tailored to your exams.</p>
+          <h1 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">Personalized Study Plans</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">Get an AI-generated roadmap tailored to your exams.</p>
         </div>
       </div>
 
-      <div className="bg-white/50 backdrop-blur-md rounded-3xl p-8 border border-white shadow-xl">
+      <div className="bg-white/50 dark:bg-slate-800/60 backdrop-blur-md rounded-3xl p-8 border border-white dark:border-slate-700 shadow-xl">
         <div className="grid md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
+            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
               <Target className="w-4 h-4 text-secondary-500" /> Topic or Exam Goal
             </label>
             <input 
@@ -67,17 +67,17 @@ export function StudyPlans() {
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               placeholder="e.g. Organic Chemistry, React, JEE Mains"
-              className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-secondary-500 focus:ring-2 focus:ring-secondary-200 transition-all"
+              className="w-full bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-xl px-4 py-3 outline-none focus:border-secondary-500 focus:ring-2 focus:ring-secondary-200 dark:focus:ring-secondary-800 transition-all"
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2 flex items-center gap-2">
+            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
               <Clock className="w-4 h-4 text-primary-500" /> Timeframe
             </label>
             <select 
               value={timeframe}
               onChange={(e) => setTimeframe(e.target.value)}
-              className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-secondary-500 focus:ring-2 focus:ring-secondary-200 transition-all"
+              className="w-full bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 rounded-xl px-4 py-3 outline-none focus:border-secondary-500 focus:ring-2 focus:ring-secondary-200 dark:focus:ring-secondary-800 transition-all"
             >
               <option value="3 Days">3 Days (Crash Course)</option>
               <option value="1 Week">1 Week</option>
@@ -98,14 +98,14 @@ export function StudyPlans() {
       </div>
 
       {plan && (
-        <div className="bg-white rounded-3xl p-8 border border-slate-100 shadow-lg">
-          <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
-            <div className="w-10 h-10 rounded-xl bg-primary-100 text-primary-600 flex items-center justify-center">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl p-8 border border-slate-100 dark:border-slate-700 shadow-lg">
+          <div className="flex items-center gap-3 mb-6 border-b border-slate-100 dark:border-slate-700 pb-4">
+            <div className="w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900/40 text-primary-600 dark:text-primary-300 flex items-center justify-center">
               <BookOpen className="w-5 h-5" />
             </div>
-            <h2 className="text-xl font-bold text-slate-800">Your Action Plan</h2>
+            <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Your Action Plan</h2>
           </div>
-          <div className="prose prose-slate max-w-none prose-headings:text-slate-800 prose-a:text-secondary-600">
+          <div className="prose prose-slate dark:prose-invert max-w-none prose-headings:text-slate-800 dark:prose-headings:text-slate-100 prose-a:text-secondary-600">
             <Markdown>{plan}</Markdown>
           </div>
         </div>

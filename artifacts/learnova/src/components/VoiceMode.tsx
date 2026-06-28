@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "motion/react";
-import { Mic, Square, Play, Pause, RefreshCw, Loader2, Volume2, Sparkles } from "lucide-react";
+import { Mic, Square, Play, Pause, RefreshCw, Loader2, Sparkles } from "lucide-react";
 import { useModel } from "../lib/modelContext";
 
 export function VoiceMode() {
@@ -14,7 +14,6 @@ export function VoiceMode() {
 
   const recognitionRef = useRef<any>(null);
   const synthesisRef = useRef<SpeechSynthesisUtterance | null>(null);
-  // Refs so the stable onend callback always sees the latest values
   const transcriptRef = useRef("");
   const modelRef = useRef(model);
   const historyRef = useRef(history);
@@ -22,7 +21,6 @@ export function VoiceMode() {
   useEffect(() => { modelRef.current = model; });
   useEffect(() => { historyRef.current = history; });
 
-  // Initialize speech recognition exactly once
   useEffect(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) return;
@@ -136,12 +134,11 @@ export function VoiceMode() {
   return (
     <div className="max-w-4xl mx-auto space-y-8 py-8">
       <div className="text-center space-y-4">
-        <h2 className="text-4xl font-extrabold text-slate-800">Voice Mode</h2>
-        <p className="text-slate-600">Speak naturally to your AI tutor for language practice and quick answers.</p>
+        <h2 className="text-4xl font-extrabold text-slate-800 dark:text-slate-100">Voice Mode</h2>
+        <p className="text-slate-600 dark:text-slate-400">Speak naturally to your AI tutor for language practice and quick answers.</p>
       </div>
 
-      <div className="bg-white/40 backdrop-blur-md rounded-[3rem] p-12 flex flex-col items-center justify-center relative overflow-hidden min-h-[450px] border border-white shadow-xl shadow-secondary-100/50">
-        {/* Animated Background Rings when listening */}
+      <div className="bg-white/40 dark:bg-slate-800/60 backdrop-blur-md rounded-[3rem] p-12 flex flex-col items-center justify-center relative overflow-hidden min-h-[450px] border border-white dark:border-slate-700 shadow-xl shadow-secondary-100/50 dark:shadow-none">
         {isListening && (
           <>
             <motion.div 
@@ -191,46 +188,46 @@ export function VoiceMode() {
                     />
                   ))}
                 </div>
-                <p className="text-slate-600 text-lg font-medium italic">"{transcript}"</p>
+                <p className="text-slate-600 dark:text-slate-300 text-lg font-medium italic">"{transcript}"</p>
               </motion.div>
             ) : isProcessing ? (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <p className="text-secondary-600 font-bold flex items-center justify-center gap-3 text-xl">
+                <p className="text-secondary-600 dark:text-secondary-400 font-bold flex items-center justify-center gap-3 text-xl">
                   <Loader2 className="w-6 h-6 animate-spin" /> AI is thinking...
                 </p>
               </motion.div>
             ) : aiResponse ? (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 w-full">
-                <div className="bg-white/70 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-white text-left relative">
+                <div className="bg-white/70 dark:bg-slate-700/80 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-white dark:border-slate-600 text-left relative">
                   <Sparkles className="absolute top-6 left-6 w-5 h-5 text-primary-500" />
-                  <p className="text-slate-800 font-medium text-lg pl-8 leading-relaxed">
+                  <p className="text-slate-800 dark:text-slate-100 font-medium text-lg pl-8 leading-relaxed">
                     {aiResponse}
                   </p>
                 </div>
                 <div className="flex items-center justify-center gap-4">
                   <button 
                     onClick={togglePlayback}
-                    className="flex items-center gap-2 px-6 py-3 bg-secondary-100 hover:bg-secondary-200 text-secondary-700 rounded-full transition-colors font-bold shadow-sm"
+                    className="flex items-center gap-2 px-6 py-3 bg-secondary-100 dark:bg-secondary-900/40 hover:bg-secondary-200 dark:hover:bg-secondary-900/60 text-secondary-700 dark:text-secondary-300 rounded-full transition-colors font-bold shadow-sm"
                   >
                     {isPlaying ? <><Pause className="w-5 h-5" /> Pause</> : <><Play className="w-5 h-5" /> Listen</>}
                   </button>
                   <button 
                     onClick={replay}
-                    className="p-3 bg-white hover:bg-slate-50 text-slate-600 rounded-full transition-colors border border-slate-200 shadow-sm"
+                    className="p-3 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-full transition-colors border border-slate-200 dark:border-slate-600 shadow-sm"
                   >
                     <RefreshCw className="w-5 h-5" />
                   </button>
                 </div>
               </motion.div>
             ) : (
-              <p className="text-slate-400 font-medium">Tap the microphone to start speaking</p>
+              <p className="text-slate-400 dark:text-slate-500 font-medium">Tap the microphone to start speaking</p>
             )}
           </div>
         </div>
       </div>
       
       {!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition) && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-2xl text-center text-sm font-medium border border-red-100">
+        <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-4 rounded-2xl text-center text-sm font-medium border border-red-100 dark:border-red-800">
           Your browser does not support Voice Recognition. Please try using Google Chrome.
         </div>
       )}

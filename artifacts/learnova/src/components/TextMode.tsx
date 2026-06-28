@@ -93,7 +93,7 @@ export function TextMode() {
                   Download PDF
                 </button>
               </div>
-              <div className="prose prose-slate max-w-none prose-headings:text-slate-800 prose-a:text-secondary-600">
+              <div className="prose prose-slate dark:prose-invert max-w-none prose-headings:text-slate-800 dark:prose-headings:text-slate-100 prose-a:text-secondary-600">
                 <Markdown>{result.notes}</Markdown>
               </div>
             </div>
@@ -205,17 +205,17 @@ function QuizSection({ topic }: { topic: string }) {
     <div className="glass rounded-3xl p-8">
       <div className="flex items-center gap-3 text-primary-600 mb-6">
         <CheckCircle2 className="w-8 h-8" />
-        <h3 className="text-2xl font-bold text-slate-800">Quiz Generator</h3>
+        <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Quiz Generator</h3>
       </div>
       
       {!quiz ? (
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Exam Goal</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Exam Goal</label>
               <select 
                 value={goal} onChange={(e) => setGoal(e.target.value)}
-                className="w-full bg-white/50 border border-white/60 rounded-xl px-4 py-2 outline-none focus:border-primary-400"
+                className="w-full bg-white/50 dark:bg-slate-700/60 border border-white/60 dark:border-slate-600 text-slate-800 dark:text-slate-100 rounded-xl px-4 py-2 outline-none focus:border-primary-400"
               >
                 <option value="JEE">JEE</option>
                 <option value="NEET">NEET</option>
@@ -224,10 +224,10 @@ function QuizSection({ topic }: { topic: string }) {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Number of Questions</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Number of Questions</label>
               <select 
                 value={count} onChange={(e) => setCount(e.target.value)}
-                className="w-full bg-white/50 border border-white/60 rounded-xl px-4 py-2 outline-none focus:border-primary-400"
+                className="w-full bg-white/50 dark:bg-slate-700/60 border border-white/60 dark:border-slate-600 text-slate-800 dark:text-slate-100 rounded-xl px-4 py-2 outline-none focus:border-primary-400"
               >
                 <option value="3">3</option>
                 <option value="5">5</option>
@@ -256,12 +256,12 @@ function QuizSection({ topic }: { topic: string }) {
 
           {quiz.questions.map((q, qIndex) => (
             <div key={qIndex} className="space-y-3">
-              <p className="font-bold text-slate-800 text-lg">{qIndex + 1}. {q.question}</p>
+              <p className="font-bold text-slate-800 dark:text-slate-100 text-lg">{qIndex + 1}. {q.question}</p>
               <div className="space-y-2">
                 {q.options.map((opt, oIndex) => {
                   const isSelected = answers[qIndex] === oIndex;
                   const isCorrect = q.correctAnswerIndex === oIndex;
-                  let btnClass = "bg-white/40 hover:bg-white/60 border-white/50 text-slate-700";
+                  let btnClass = "bg-white/40 dark:bg-slate-700/50 hover:bg-white/60 dark:hover:bg-slate-700/80 border-white/50 dark:border-slate-600/50 text-slate-700 dark:text-slate-200";
                   
                   if (submitted) {
                     if (isCorrect) btnClass = "bg-green-100 border-green-400 text-green-800 shadow-sm";
@@ -283,7 +283,7 @@ function QuizSection({ topic }: { topic: string }) {
                 })}
               </div>
               {submitted && (
-                <div className="bg-slate-100/80 backdrop-blur-sm rounded-xl p-4 text-sm text-slate-600 border border-slate-200">
+                <div className="bg-slate-100/80 dark:bg-slate-700/60 backdrop-blur-sm rounded-xl p-4 text-sm text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">
                   <span className="font-bold">Explanation:</span> {q.explanation}
                 </div>
               )}
@@ -301,7 +301,7 @@ function QuizSection({ topic }: { topic: string }) {
           ) : (
             <button 
               onClick={() => setQuiz(null)}
-              className="w-full bg-white hover:bg-slate-50 text-slate-700 font-bold py-3 rounded-xl transition-all border border-slate-200 shadow-sm"
+              className="w-full bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-3 rounded-xl transition-all border border-slate-200 dark:border-slate-600 shadow-sm"
             >
               Take Another Quiz
             </button>

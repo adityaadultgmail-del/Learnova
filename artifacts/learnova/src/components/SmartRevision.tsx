@@ -70,28 +70,28 @@ export function SmartRevision() {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="flex items-center gap-4 mb-2">
-        <Link to="/" className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-500">
+        <Link to="/" className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-500 dark:text-slate-400">
           <ArrowLeft className="w-6 h-6" />
         </Link>
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-800">Smart Revision</h1>
-          <p className="text-slate-500 mt-1">AI-generated flashcards for spaced repetition.</p>
+          <h1 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100">Smart Revision</h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">AI-generated flashcards for spaced repetition.</p>
         </div>
       </div>
 
       {!cards.length ? (
-        <div className="bg-white/50 backdrop-blur-md rounded-3xl p-8 border border-white shadow-xl flex flex-col items-center justify-center min-h-[300px] text-center">
-          <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 mb-6">
+        <div className="bg-white/50 dark:bg-slate-800/60 backdrop-blur-md rounded-3xl p-8 border border-white dark:border-slate-700 shadow-xl flex flex-col items-center justify-center min-h-[300px] text-center">
+          <div className="w-16 h-16 bg-primary-100 dark:bg-primary-900/40 rounded-full flex items-center justify-center text-primary-600 dark:text-primary-300 mb-6">
             <BrainCircuit className="w-8 h-8" />
           </div>
-          <h3 className="text-xl font-bold text-slate-800 mb-4">What do you want to revise?</h3>
+          <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-4">What do you want to revise?</h3>
           <div className="flex w-full max-w-md gap-2">
             <input 
               type="text" 
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               placeholder="e.g. Mitochondria, WW2, Vectors"
-              className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all"
+              className="flex-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-xl px-4 py-3 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:focus:ring-primary-900 transition-all"
             />
             <button 
               onClick={generateCards}
@@ -105,12 +105,12 @@ export function SmartRevision() {
       ) : (
         <div className="flex flex-col items-center max-w-2xl mx-auto">
           <div className="flex items-center justify-between w-full mb-6">
-            <span className="text-sm font-bold text-slate-500 bg-white px-3 py-1 rounded-full shadow-sm border border-slate-100">
+            <span className="text-sm font-bold text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-700 px-3 py-1 rounded-full shadow-sm border border-slate-100 dark:border-slate-600">
               Card {currentIndex + 1} of {cards.length}
             </span>
             <button 
               onClick={() => setCards([])}
-              className="text-sm font-bold text-secondary-600 hover:text-secondary-700 flex items-center gap-1"
+              className="text-sm font-bold text-secondary-600 dark:text-secondary-400 hover:text-secondary-700 flex items-center gap-1"
             >
               <RefreshCw className="w-4 h-4" /> New Deck
             </button>
@@ -127,16 +127,16 @@ export function SmartRevision() {
               className="w-full h-full relative preserve-3d"
             >
               {/* Front - Question */}
-              <div className="absolute w-full h-full backface-hidden bg-white rounded-3xl shadow-xl border border-slate-100 p-8 flex flex-col items-center justify-center text-center">
+              <div className="absolute w-full h-full backface-hidden bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 p-8 flex flex-col items-center justify-center text-center">
                 <Layers className="w-8 h-8 text-secondary-400 mb-6" />
-                <h3 className="text-2xl font-bold text-slate-800 leading-snug">{cards[currentIndex].question}</h3>
-                <p className="text-sm text-slate-400 mt-8 absolute bottom-8">Tap to reveal answer</p>
+                <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 leading-snug">{cards[currentIndex].question}</h3>
+                <p className="text-sm text-slate-400 dark:text-slate-500 mt-8 absolute bottom-8">Tap to reveal answer</p>
               </div>
 
               {/* Back - Answer */}
-              <div className="absolute w-full h-full backface-hidden bg-primary-50 rounded-3xl shadow-xl border border-primary-100 p-8 flex flex-col items-center justify-center text-center [transform:rotateY(180deg)]">
-                <BrainCircuit className="w-8 h-8 text-primary-500 mb-6" />
-                <div className="text-lg font-medium text-slate-700 leading-relaxed overflow-y-auto max-h-[80%]">
+              <div className="absolute w-full h-full backface-hidden bg-primary-50 dark:bg-slate-700 rounded-3xl shadow-xl border border-primary-100 dark:border-slate-600 p-8 flex flex-col items-center justify-center text-center [transform:rotateY(180deg)]">
+                <BrainCircuit className="w-8 h-8 text-primary-500 dark:text-primary-400 mb-6" />
+                <div className="text-lg font-medium text-slate-700 dark:text-slate-200 leading-relaxed overflow-y-auto max-h-[80%]">
                    <Markdown>{cards[currentIndex].answer}</Markdown>
                 </div>
               </div>
@@ -146,7 +146,7 @@ export function SmartRevision() {
           <div className="flex items-center gap-4 mt-8 w-full">
             <button 
               onClick={prevCard}
-              className="flex-1 bg-white hover:bg-slate-50 text-slate-700 font-bold py-4 rounded-2xl shadow-sm border border-slate-200 transition-all"
+              className="flex-1 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-600 transition-all"
             >
               Previous
             </button>
