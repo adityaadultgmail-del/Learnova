@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary-50: #fefce8;
   --color-primary-100: #fef9c3;
@@ -26,6 +28,9 @@
   .glass {
     @apply bg-white/70 backdrop-blur-md border border-white/40 shadow-xl;
   }
+  .dark .glass {
+    @apply bg-slate-800/70 border-slate-700/50;
+  }
   .glass-dark {
     @apply bg-slate-900/70 backdrop-blur-md border border-slate-700/50 shadow-xl;
   }
@@ -44,10 +49,14 @@ body {
   @apply bg-gradient-to-br from-primary-50 via-white to-secondary-100 min-h-screen text-slate-800 antialiased font-sans;
 }
 
+.dark body {
+  background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
+  color: #e2e8f0;
+}
+
 @media print {
   body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 }
-

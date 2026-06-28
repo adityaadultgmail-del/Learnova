@@ -13,7 +13,7 @@ export function Home() {
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-5xl font-extrabold text-slate-800 tracking-tight"
+          className="text-5xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight"
         >
           Master any topic with your <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary-500 to-primary-500">AI Tutor Learnova</span>
         </motion.h1>
@@ -21,7 +21,7 @@ export function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-lg text-slate-600"
+          className="text-lg text-slate-600 dark:text-slate-400"
         >
           Choose your mode: Text Mode or Voice Mode.
         </motion.p>
