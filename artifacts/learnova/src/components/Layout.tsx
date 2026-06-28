@@ -138,7 +138,10 @@ export function Layout() {
       <footer className="border-t border-secondary-100 bg-white/40 backdrop-blur-md mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
-            <span className="text-xs text-slate-500">Made with ❤️ by <span className="font-bold text-slate-800">Coffee To Code</span></span>
+            <div className="flex items-center gap-2">
+              <img src="/coffee-to-code.jpeg" alt="Coffee To Code" className="w-8 h-8 rounded-full object-cover" />
+              <span className="text-xs font-semibold text-slate-700">A Part Of Coffee To Code</span>
+            </div>
             <div className="h-3 w-[1px] bg-slate-200"></div>
             <a href="mailto:coffee.to.code26@gmail.com" className="text-xs text-slate-400 hover:text-secondary-500 transition-colors">coffee.to.code26@gmail.com</a>
           </div>
