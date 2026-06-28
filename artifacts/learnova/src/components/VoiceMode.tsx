@@ -11,49 +11,62 @@ export function VoiceMode() {
   const [transcript, setTranscript] = useState("");
   const [aiResponse, setAiResponse] = useState("");
   const [history, setHistory] = useState<{role: string, text: string}[]>([]);
-  
+
   const recognitionRef = useRef<any>(null);
   const synthesisRef = useRef<SpeechSynthesisUtterance | null>(null);
+  // Refs so the stable onend callback always sees the latest values
+  const transcriptRef = useRef("");
+  const modelRef = useRef(model);
+  const historyRef = useRef(history);
 
+  useEffect(() => { modelRef.current = model; });
+  useEffect(() => { historyRef.current = history; });
+
+  // Initialize speech recognition exactly once
   useEffect(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = true;
+    if (!SpeechRecognition) return;
 
-      recognitionRef.current.onresult = (event: any) => {
-        let currentTranscript = "";
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          currentTranscript += event.results[i][0].transcript;
-        }
-        setTranscript(currentTranscript);
-      };
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognitionRef.current = recognition;
 
-      recognitionRef.current.onend = () => {
-        setIsListening(false);
-        if (transcript) {
-          handleVoiceSubmit(transcript);
-        }
-      };
-      
-      recognitionRef.current.onerror = (e: any) => {
-        console.error("Speech recognition error:", e.error);
-        setIsListening(false);
-      };
-    }
+    recognition.onresult = (event: any) => {
+      let current = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        current += event.results[i][0].transcript;
+      }
+      transcriptRef.current = current;
+      setTranscript(current);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+      const finalText = transcriptRef.current;
+      if (finalText) {
+        transcriptRef.current = "";
+        handleVoiceSubmit(finalText);
+      }
+    };
+
+    recognition.onerror = (e: any) => {
+      console.error("Speech recognition error:", e.error);
+      setIsListening(false);
+    };
 
     return () => {
-      if (recognitionRef.current) recognitionRef.current.stop();
+      recognition.abort();
       window.speechSynthesis.cancel();
     };
-  }, [transcript]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleListening = () => {
     if (isListening) {
       recognitionRef.current?.stop();
     } else {
       setTranscript("");
+      transcriptRef.current = "";
       recognitionRef.current?.start();
       setIsListening(true);
     }
@@ -63,11 +76,11 @@ export function VoiceMode() {
     setIsProcessing(true);
     try {
       setHistory(prev => [...prev, { role: 'user', text }]);
-      
+
       const res = await fetch("/api/study/voice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, history, model })
+        body: JSON.stringify({ text, history: historyRef.current, model: modelRef.current })
       });
       const data = await res.json();
       

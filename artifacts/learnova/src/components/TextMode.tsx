@@ -140,6 +140,7 @@ export function TextMode() {
 
 function QuizSection({ topic }: { topic: string }) {
   const { user } = useAuth();
+  const { model } = useModel();
   const [goal, setGoal] = useState("JEE");
   const [count, setCount] = useState("5");
   const [loading, setLoading] = useState(false);
@@ -156,7 +157,7 @@ function QuizSection({ topic }: { topic: string }) {
       const res = await fetch("/api/study/quiz", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic, examGoal: goal, numQuestions: parseInt(count) })
+        body: JSON.stringify({ topic, examGoal: goal, numQuestions: parseInt(count), model })
       });
       const data = await res.json();
       setQuiz(data);
