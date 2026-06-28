@@ -6,8 +6,10 @@ import { useAuth } from "../lib/auth";
 import { db } from "../lib/firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { PdfTemplate } from "./PdfTemplate";
+import { useModel } from "../lib/modelContext";
 
 export function TextMode() {
+  const { model } = useModel();
   const [topic, setTopic] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{
@@ -25,7 +27,7 @@ export function TextMode() {
       const res = await fetch("/api/study/text", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic })
+        body: JSON.stringify({ topic, model })
       });
       const data = await res.json();
       setResult(data);

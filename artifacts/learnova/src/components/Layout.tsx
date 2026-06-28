@@ -1,5 +1,5 @@
 import { Link, Outlet } from "react-router-dom";
-import { BookOpen } from "lucide-react";
+import { BookOpen, ChevronDown } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { useAuth } from "../lib/auth";
@@ -7,12 +7,17 @@ import { LoginModal } from "./LoginModal";
 import { ProfileModal } from "./ProfileModal";
 import { auth, db } from "../lib/firebase";
 import { collection, doc, setDoc } from "firebase/firestore";
+import { useModel, GROQ_MODELS, type GroqModelId } from "../lib/modelContext";
 
 export function Layout() {
   const { user, userData } = useAuth();
+  const { model, setModel } = useModel();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [loadingUpgrade, setLoadingUpgrade] = useState(false);
+  const [modelOpen, setModelOpen] = useState(false);
+
+  const activeModel = GROQ_MODELS.find(m => m.id === model)!;
 
   const handleUpgrade = async () => {
     if (!user) {
@@ -66,6 +71,33 @@ export function Layout() {
           </Link>
           <div className="flex items-center gap-6">
             <Link to="/" className="text-sm font-medium text-slate-500 hover:text-secondary-600 transition-colors">Home</Link>
+
+            {/* Model Selector */}
+            <div className="relative">
+              <button
+                onClick={() => setModelOpen(o => !o)}
+                className="flex items-center gap-1.5 text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full transition-colors"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                {activeModel.label}
+                <span className="text-[10px] font-bold text-primary-600 bg-primary-100 px-1.5 py-0.5 rounded-full">{activeModel.badge}</span>
+                <ChevronDown className={`w-3 h-3 transition-transform ${modelOpen ? "rotate-180" : ""}`} />
+              </button>
+              {modelOpen && (
+                <div className="absolute right-0 top-full mt-2 w-52 bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden">
+                  {GROQ_MODELS.map(m => (
+                    <button
+                      key={m.id}
+                      onClick={() => { setModel(m.id as GroqModelId); setModelOpen(false); }}
+                      className={`w-full flex items-center justify-between px-4 py-2.5 text-sm transition-colors hover:bg-slate-50 ${model === m.id ? "bg-primary-50 text-primary-700 font-semibold" : "text-slate-700"}`}
+                    >
+                      <span>{m.label}</span>
+                      <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full">{m.badge}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             
             {userData?.premiumStatus === 'approved' ? (
               <span className="text-sm font-bold text-primary-600 bg-primary-100 px-4 py-1.5 rounded-full">Premium ✨</span>

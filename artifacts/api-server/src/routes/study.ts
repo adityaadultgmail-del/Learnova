@@ -3,7 +3,12 @@ import Groq from "groq-sdk";
 
 const router: IRouter = Router();
 
-const MODEL = "llama-3.3-70b-versatile";
+const DEFAULT_MODEL = "llama-3.3-70b-versatile";
+const ALLOWED_MODELS = new Set([
+  "llama-3.3-70b-versatile",
+  "llama-3.1-8b-instant",
+  "mixtral-8x7b-32768",
+]);
 
 function getGroq() {
   if (!process.env.GROQ_API_KEY) {
@@ -12,9 +17,14 @@ function getGroq() {
   return new Groq({ apiKey: process.env.GROQ_API_KEY });
 }
 
-async function chat(groq: Groq, systemPrompt: string, userPrompt: string, jsonMode = false) {
+function resolveModel(requested?: string) {
+  if (requested && ALLOWED_MODELS.has(requested)) return requested;
+  return DEFAULT_MODEL;
+}
+
+async function chat(groq: Groq, systemPrompt: string, userPrompt: string, model: string, jsonMode = false) {
   const response = await groq.chat.completions.create({
-    model: MODEL,
+    model,
     messages: [
       { role: "system", content: systemPrompt },
       { role: "user", content: userPrompt },
@@ -26,11 +36,12 @@ async function chat(groq: Groq, systemPrompt: string, userPrompt: string, jsonMo
 
 router.post("/study/text", async (req, res) => {
   try {
-    const { topic } = req.body;
+    const { topic, model: requestedModel } = req.body;
     if (!topic) {
       return res.status(400).json({ error: "Topic is required" });
     }
     const groq = getGroq();
+    const model = resolveModel(requestedModel);
     const system = `You are a study assistant. Always respond with valid JSON only — no markdown wrappers, no extra text.`;
     const user = `The user wants to study: "${topic}".
 Return a JSON object with exactly these fields:
@@ -43,7 +54,7 @@ Return a JSON object with exactly these fields:
   "notes": "Comprehensive study notes in markdown. Include headings, bullet points, and key concepts.",
   "quizTopic": "A brief summary of the topic to generate quizzes on later."
 }`;
-    const text = await chat(groq, system, user, true);
+    const text = await chat(groq, system, user, model, true);
     const data = JSON.parse(text);
     res.json(data);
   } catch (error: any) {
@@ -54,11 +65,12 @@ Return a JSON object with exactly these fields:
 
 router.post("/study/quiz", async (req, res) => {
   try {
-    const { topic, examGoal, numQuestions } = req.body;
+    const { topic, examGoal, numQuestions, model: requestedModel } = req.body;
     if (!topic || !examGoal || !numQuestions) {
       return res.status(400).json({ error: "Missing required fields" });
     }
     const groq = getGroq();
+    const model = resolveModel(requestedModel);
     const system = `You are an expert examiner. Always respond with valid JSON only — no markdown wrappers, no extra text.`;
     const user = `Create a ${numQuestions}-question multiple-choice quiz for the ${examGoal} exam on: "${topic}".
 Return a JSON object:
@@ -72,7 +84,7 @@ Return a JSON object:
     }
   ]
 }`;
-    const text = await chat(groq, system, user, true);
+    const text = await chat(groq, system, user, model, true);
     const data = JSON.parse(text);
     res.json(data);
   } catch (error: any) {
@@ -83,15 +95,16 @@ Return a JSON object:
 
 router.post("/study/voice", async (req, res) => {
   try {
-    const { text } = req.body;
+    const { text, model: requestedModel } = req.body;
     if (!text) {
       return res.status(400).json({ error: "Text is required" });
     }
     const groq = getGroq();
+    const model = resolveModel(requestedModel);
     const system = `You are a friendly, conversational voice AI tutor. 
 Keep responses concise and easy to understand when spoken aloud.
 Avoid complex markdown — no tables, no code blocks — since this will be read by text-to-speech.`;
-    const reply = await chat(groq, system, text);
+    const reply = await chat(groq, system, text, model);
     res.json({ text: reply });
   } catch (error: any) {
     req.log.error({ err: error }, "Error in /api/study/voice");
@@ -101,13 +114,14 @@ Avoid complex markdown — no tables, no code blocks — since this will be read
 
 router.post("/study/doubt", async (req, res) => {
   try {
-    const { doubt } = req.body;
+    const { doubt, model: requestedModel } = req.body;
     if (!doubt) {
       return res.status(400).json({ error: "Doubt is required" });
     }
     const groq = getGroq();
+    const model = resolveModel(requestedModel);
     const system = `You are an expert AI tutor. Answer student doubts clearly, concisely, and with examples where helpful.`;
-    const reply = await chat(groq, system, doubt);
+    const reply = await chat(groq, system, doubt, model);
     res.json({ text: reply });
   } catch (error: any) {
     req.log.error({ err: error }, "Error in /api/study/doubt");
@@ -117,14 +131,15 @@ router.post("/study/doubt", async (req, res) => {
 
 router.post("/study/plan", async (req, res) => {
   try {
-    const { topic, timeframe } = req.body;
+    const { topic, timeframe, model: requestedModel } = req.body;
     if (!topic || !timeframe) {
       return res.status(400).json({ error: "Topic and timeframe are required" });
     }
     const groq = getGroq();
+    const model = resolveModel(requestedModel);
     const system = `You are an expert study planner. Create detailed, structured, and motivating study plans in Markdown.`;
     const user = `Create a study plan for "${topic}" over ${timeframe}. Break it down by days/weeks. Include specific topics, practice suggestions, and revision strategies. Use clear Markdown headings.`;
-    const reply = await chat(groq, system, user);
+    const reply = await chat(groq, system, user, model);
     res.json({ plan: reply });
   } catch (error: any) {
     req.log.error({ err: error }, "Error in /api/study/plan");
@@ -134,11 +149,12 @@ router.post("/study/plan", async (req, res) => {
 
 router.post("/study/flashcards", async (req, res) => {
   try {
-    const { topic } = req.body;
+    const { topic, model: requestedModel } = req.body;
     if (!topic) {
       return res.status(400).json({ error: "Topic is required" });
     }
     const groq = getGroq();
+    const model = resolveModel(requestedModel);
     const system = `You are a flashcard generator. Always respond with valid JSON only — no markdown wrappers, no extra text.`;
     const user = `Generate 10 spaced-repetition flashcards for: "${topic}".
 Return a JSON object:
@@ -148,7 +164,7 @@ Return a JSON object:
     {"question": "Q2?", "answer": "A2"}
   ]
 }`;
-    const text = await chat(groq, system, user, true);
+    const text = await chat(groq, system, user, model, true);
     const data = JSON.parse(text);
     res.json({ cards: data.cards ?? data });
   } catch (error: any) {

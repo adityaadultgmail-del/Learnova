@@ -4,8 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../lib/auth";
 import Markdown from "react-markdown";
 import { motion } from "motion/react";
+import { useModel } from "../lib/modelContext";
 
 export function DoubtSolving() {
+  const { model } = useModel();
   const { userData } = useAuth();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<{ role: 'user' | 'model', content: string }[]>([]);
@@ -35,7 +37,7 @@ export function DoubtSolving() {
       const res = await fetch("/api/study/doubt", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ doubt: userMsg })
+        body: JSON.stringify({ doubt: userMsg, model })
       });
       const data = await res.json();
 

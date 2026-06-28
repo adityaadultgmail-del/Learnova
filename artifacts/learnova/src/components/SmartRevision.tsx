@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../lib/auth";
 import { motion, AnimatePresence } from "motion/react";
 import Markdown from "react-markdown";
+import { useModel } from "../lib/modelContext";
 
 interface Flashcard {
   question: string;
@@ -11,6 +12,7 @@ interface Flashcard {
 }
 
 export function SmartRevision() {
+  const { model } = useModel();
   const { userData } = useAuth();
   const navigate = useNavigate();
   const [topic, setTopic] = useState("");
@@ -36,7 +38,7 @@ export function SmartRevision() {
       const res = await fetch("/api/study/flashcards", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic })
+        body: JSON.stringify({ topic, model })
       });
       const data = await res.json();
 

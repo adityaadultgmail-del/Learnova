@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "motion/react";
 import { Mic, Square, Play, Pause, RefreshCw, Loader2, Volume2, Sparkles } from "lucide-react";
+import { useModel } from "../lib/modelContext";
 
 export function VoiceMode() {
+  const { model } = useModel();
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -65,7 +67,7 @@ export function VoiceMode() {
       const res = await fetch("/api/study/voice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, history })
+        body: JSON.stringify({ text, history, model })
       });
       const data = await res.json();
       
