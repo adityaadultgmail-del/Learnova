@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion } from "motion/react";
 import { Mic, Square, Play, Pause, RefreshCw, Loader2, Sparkles } from "lucide-react";
 import { useModel } from "../lib/modelContext";
+import { apiUrl } from "../lib/api";
 
 export function VoiceMode() {
   const { model } = useModel();
@@ -75,7 +76,7 @@ export function VoiceMode() {
     try {
       setHistory(prev => [...prev, { role: 'user', text }]);
 
-      const res = await fetch("/api/study/voice", {
+      const res = await fetch(apiUrl("/api/study/voice"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text, history: historyRef.current, model: modelRef.current })

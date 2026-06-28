@@ -8,6 +8,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { PdfTemplate } from "./PdfTemplate";
 import { useModel } from "../lib/modelContext";
 import { useLocation } from "react-router-dom";
+import { apiUrl } from "../lib/api";
 
 export function TextMode() {
   const { user } = useAuth();
@@ -32,7 +33,7 @@ export function TextMode() {
     
     setLoading(true);
     try {
-      const res = await fetch("/api/study/text", {
+      const res = await fetch(apiUrl("/api/study/text"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topic, model })
@@ -185,7 +186,7 @@ function QuizSection({ topic }: { topic: string }) {
   const generateQuiz = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/study/quiz", {
+      const res = await fetch(apiUrl("/api/study/quiz"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topic, examGoal: goal, numQuestions: parseInt(count), model })

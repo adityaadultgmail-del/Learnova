@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../lib/auth";
 import Markdown from "react-markdown";
 import { useModel } from "../lib/modelContext";
+import { apiUrl } from "../lib/api";
 
 export function StudyPlans() {
   const { model } = useModel();
@@ -26,7 +27,7 @@ export function StudyPlans() {
     setPlan("");
     
     try {
-      const res = await fetch("/api/study/plan", {
+      const res = await fetch(apiUrl("/api/study/plan"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topic, timeframe, model })

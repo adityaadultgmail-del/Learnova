@@ -5,6 +5,7 @@ import { useAuth } from "../lib/auth";
 import Markdown from "react-markdown";
 import { motion } from "motion/react";
 import { useModel } from "../lib/modelContext";
+import { apiUrl } from "../lib/api";
 
 export function DoubtSolving() {
   const { model } = useModel();
@@ -34,7 +35,7 @@ export function DoubtSolving() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/study/doubt", {
+      const res = await fetch(apiUrl("/api/study/doubt"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ doubt: userMsg, model })

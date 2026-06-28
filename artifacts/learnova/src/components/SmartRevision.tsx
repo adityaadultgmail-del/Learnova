@@ -5,6 +5,7 @@ import { useAuth } from "../lib/auth";
 import { motion, AnimatePresence } from "motion/react";
 import Markdown from "react-markdown";
 import { useModel } from "../lib/modelContext";
+import { apiUrl } from "../lib/api";
 
 interface Flashcard {
   question: string;
@@ -35,7 +36,7 @@ export function SmartRevision() {
     setIsFlipped(false);
     
     try {
-      const res = await fetch("/api/study/flashcards", {
+      const res = await fetch(apiUrl("/api/study/flashcards"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ topic, model })
