@@ -47,13 +47,14 @@ router.post("/study/text", async (req, res) => {
 Return a JSON object with exactly these fields:
 {
   "youtubeSuggestions": [
-    {"title": "Video title 1", "url": "https://youtube.com/watch?v=XXXXXXXXXXX"},
-    {"title": "Video title 2", "url": "https://youtube.com/watch?v=XXXXXXXXXXX"},
-    {"title": "Video title 3", "url": "https://youtube.com/watch?v=XXXXXXXXXXX"}
+    {"title": "Descriptive video title 1 for ${topic}", "url": "https://www.youtube.com/results?search_query=descriptive+keywords+for+video+1"},
+    {"title": "Descriptive video title 2 for ${topic}", "url": "https://www.youtube.com/results?search_query=descriptive+keywords+for+video+2"},
+    {"title": "Descriptive video title 3 for ${topic}", "url": "https://www.youtube.com/results?search_query=descriptive+keywords+for+video+3"}
   ],
   "notes": "Comprehensive study notes in markdown. Include headings, bullet points, and key concepts.",
   "quizTopic": "A brief summary of the topic to generate quizzes on later."
-}`;
+}
+IMPORTANT for youtubeSuggestions: Each url MUST be a real YouTube search URL in the format https://www.youtube.com/results?search_query=your+search+terms where the search terms are URL-encoded (spaces as +) and directly relevant to the video title. Make each title specific and descriptive (e.g. "Newton's Laws of Motion Explained - Class 11 Physics" not just "physics video"). The search query should match the title closely.`;
     const text = await chat(groq, system, user, model, true);
     const data = JSON.parse(text);
     res.json(data);

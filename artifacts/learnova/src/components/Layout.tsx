@@ -1,6 +1,5 @@
 import { Link, Outlet } from "react-router-dom";
-import { BookOpen, ChevronDown } from "lucide-react";
-import { motion } from "motion/react";
+import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../lib/auth";
 import { LoginModal } from "./LoginModal";
@@ -58,13 +57,11 @@ export function Layout() {
       <header className="sticky top-0 z-50 h-16 border-b border-secondary-100 bg-white/40 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 transition-colors group">
-            <div className="relative w-10 h-10 bg-primary-600 rounded-xl flex items-center justify-center shadow-lg shadow-primary-200 group-hover:scale-105 transition-transform text-white">
-              <BookOpen className="w-6 h-6 absolute bottom-1" />
-              <div className="absolute top-1 text-white flex flex-col items-center">
-                 <div className="w-6 h-1 border-b-2 border-white rounded-sm -mb-1 z-10"></div>
-                 <div className="w-4 h-3 bg-white rounded-sm"></div>
-              </div>
-            </div>
+            <img
+              src="/logo.png"
+              alt="Learnova"
+              className="w-10 h-10 object-contain group-hover:scale-105 transition-transform"
+            />
             <span className="text-xl font-bold text-[#0D3B94]">
               Lear<span className="text-[#FFB300]">nova</span>
             </span>
@@ -141,13 +138,13 @@ export function Layout() {
       <footer className="border-t border-secondary-100 bg-white/40 backdrop-blur-md mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4">
-            <span className="text-xs text-slate-500">Made with ❤️ by <span className="font-bold text-slate-800">Indian</span></span>
+            <span className="text-xs text-slate-500">Made with ❤️ by <span className="font-bold text-slate-800">Coffee To Code</span></span>
             <div className="h-3 w-[1px] bg-slate-200"></div>
-            <a href="mailto:example@gmail.com" className="text-xs text-slate-400 hover:text-secondary-500 transition-colors">contact: example@gmail.com</a>
+            <a href="mailto:coffee.to.code26@gmail.com" className="text-xs text-slate-400 hover:text-secondary-500 transition-colors">coffee.to.code26@gmail.com</a>
           </div>
           <div className="flex items-center gap-6">
-            <a href="#" className="text-xs text-secondary-500 hover:underline">LinkedIn</a>
-            <a href="#" className="text-xs text-secondary-500 hover:underline">Instagram</a>
+            <a href="https://github.com/CoffeetoCode26" target="_blank" rel="noopener noreferrer" className="text-xs text-secondary-500 hover:underline">GitHub</a>
+            <a href="https://www.instagram.com/coffee_code.2.6?utm_source=qr&igsh=MTZuaDdzZXQ5NWd2Nw==" target="_blank" rel="noopener noreferrer" className="text-xs text-secondary-500 hover:underline">Instagram</a>
             <div className="h-3 w-[1px] bg-slate-200"></div>
             {userData?.role === 'admin' && (
               <Link to="/admin" className="text-xs font-bold text-slate-600 hover:text-secondary-600 uppercase tracking-tight transition-colors">Admin Panel</Link>

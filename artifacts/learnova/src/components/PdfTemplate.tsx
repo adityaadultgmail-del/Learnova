@@ -1,6 +1,6 @@
 import React from 'react';
 import Markdown from 'react-markdown';
-import { BookOpen, Linkedin, Globe, Code } from 'lucide-react';
+import { Github, Globe, Code } from 'lucide-react';
 
 interface PdfTemplateProps {
   topic: string;
@@ -10,7 +10,7 @@ interface PdfTemplateProps {
 export const PdfTemplate: React.FC<PdfTemplateProps> = ({ topic, notes }) => {
   return (
     <div id="pdf-template" className="w-[800px] bg-white relative p-10 pb-40">
-      
+
       {/* Top Graphic */}
       <div className="absolute top-0 left-0 w-full flex">
          <div className="h-4 w-3/4 bg-[#0D3B94] rounded-br-full"></div>
@@ -20,18 +20,12 @@ export const PdfTemplate: React.FC<PdfTemplateProps> = ({ topic, notes }) => {
       {/* Header */}
       <div className="flex justify-between items-center mt-6">
         <div className="flex items-center gap-4">
-          <div className="relative w-16 h-16 bg-[#0D3B94] rounded-2xl flex items-center justify-center text-white">
-            <BookOpen className="w-10 h-10 absolute bottom-2" />
-            <div className="absolute top-2 text-white flex flex-col items-center">
-                <div className="w-10 h-1 border-b-2 border-white rounded-sm -mb-1 z-10"></div>
-                <div className="w-6 h-4 bg-white rounded-sm"></div>
-            </div>
-          </div>
+          <img src="/logo.png" alt="Learnova" className="w-20 h-20 object-contain" />
           <div>
             <span className="text-4xl font-bold text-[#0D3B94]">
               Lear<span className="text-[#FFB300]">nova</span>
             </span>
-            <p className="text-[#0D3B94] text-sm mt-1 border-t border-[#0D3B94] pt-1">Learn Smarter, Achieve Better</p>
+            <p className="text-[#0D3B94] text-sm mt-1 border-t border-[#0D3B94] pt-1">— Learn Smarter, Achieve Better —</p>
           </div>
         </div>
 
@@ -44,7 +38,7 @@ export const PdfTemplate: React.FC<PdfTemplateProps> = ({ topic, notes }) => {
           <div className="text-3xl text-[#FFB300] absolute -bottom-5 right-2 bg-white px-1">"</div>
         </div>
       </div>
-      
+
       <div className="w-full h-0.5 bg-[#FFB300] my-8"></div>
 
       {/* Notes Content */}
@@ -57,7 +51,7 @@ export const PdfTemplate: React.FC<PdfTemplateProps> = ({ topic, notes }) => {
       <div className="absolute bottom-0 left-0 w-full flex flex-col mt-20">
          <div className="w-full h-0.5 bg-[#0D3B94] mb-4"></div>
          <div className="flex justify-between items-center px-10 mb-8">
-            
+
             {/* Copyright */}
             <div className="flex flex-col gap-1">
                <div className="flex items-center gap-2 text-[#0D3B94] font-bold">
@@ -70,14 +64,14 @@ export const PdfTemplate: React.FC<PdfTemplateProps> = ({ topic, notes }) => {
                </div>
             </div>
 
-            {/* LinkedIn */}
+            {/* GitHub */}
             <div className="flex items-center gap-2">
                <div className="w-10 h-10 bg-[#0D3B94] flex items-center justify-center text-white rounded-md">
-                 <Linkedin className="w-6 h-6" />
+                 <Github className="w-6 h-6" />
                </div>
                <div className="flex flex-col">
-                 <span className="text-xs font-bold text-slate-800">Connect on LinkedIn</span>
-                 <span className="text-xs text-[#0D3B94]">www.linkedin.com/in/aditya-singh-130409aak</span>
+                 <span className="text-xs font-bold text-slate-800">GitHub</span>
+                 <span className="text-xs text-[#0D3B94]">github.com/CoffeetoCode26</span>
                </div>
             </div>
 
@@ -92,7 +86,7 @@ export const PdfTemplate: React.FC<PdfTemplateProps> = ({ topic, notes }) => {
                </div>
             </div>
 
-            {/* Coffee */}
+            {/* Coffee To Code */}
             <div className="flex items-center gap-2">
                <div className="w-10 h-10 bg-[#5C3A21] rounded-lg flex items-center justify-center text-white relative">
                  <Code className="w-6 h-6 text-[#FFB300]" />
