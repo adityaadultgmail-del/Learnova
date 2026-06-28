@@ -1,11 +1,50 @@
 [build]
   command = "pnpm install && pnpm --filter @workspace/learnova build"
   publish = "artifacts/learnova/dist/public"
+  functions = "netlify/functions"
 
 [build.environment]
   BASE_PATH = "/"
   NODE_VERSION = "20"
+  PNPM_VERSION = "9"
 
+# API function redirects — must come BEFORE the catch-all below
+[[redirects]]
+  from = "/api/study/text"
+  to = "/.netlify/functions/study-text"
+  status = 200
+
+[[redirects]]
+  from = "/api/study/quiz"
+  to = "/.netlify/functions/study-quiz"
+  status = 200
+
+[[redirects]]
+  from = "/api/study/doubt"
+  to = "/.netlify/functions/study-doubt"
+  status = 200
+
+[[redirects]]
+  from = "/api/study/flashcards"
+  to = "/.netlify/functions/study-flashcards"
+  status = 200
+
+[[redirects]]
+  from = "/api/study/voice"
+  to = "/.netlify/functions/study-voice"
+  status = 200
+
+[[redirects]]
+  from = "/api/study/plan"
+  to = "/.netlify/functions/study-plan"
+  status = 200
+
+[[redirects]]
+  from = "/api/healthz"
+  to = "/.netlify/functions/healthz"
+  status = 200
+
+# SPA catch-all — must be last
 [[redirects]]
   from = "/*"
   to = "/index.html"
