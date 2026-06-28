@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { Search, Loader2, Youtube, FileText, Download, CheckCircle2 } from "lucide-react";
 import Markdown from "react-markdown";
@@ -7,11 +7,19 @@ import { db } from "../lib/firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { PdfTemplate } from "./PdfTemplate";
 import { useModel } from "../lib/modelContext";
+import { useLocation } from "react-router-dom";
 
 export function TextMode() {
+  const { user } = useAuth();
   const { model } = useModel();
-  const [topic, setTopic] = useState("");
+  const location = useLocation();
+  const prefill = (location.state as any)?.prefillTopic ?? "";
+  const [topic, setTopic] = useState(prefill);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (prefill) setTopic(prefill);
+  }, [prefill]);
   const [result, setResult] = useState<{
     youtubeSuggestions: { title: string; url: string }[];
     notes: string;
@@ -31,6 +39,25 @@ export function TextMode() {
       });
       const data = await res.json();
       setResult(data);
+
+      if (user) {
+        try {
+          const entry = {
+            topic: topic.trim(),
+            notesPreview: (data.notes as string)?.slice(0, 300) ?? "",
+            youtubeSuggestions: data.youtubeSuggestions ?? [],
+            quizTopic: data.quizTopic ?? topic.trim(),
+            model,
+            searchedAt: new Date().toISOString(),
+          };
+          await addDoc(
+            collection(db, "studyHistory", user.uid, "entries"),
+            entry
+          );
+        } catch (err) {
+          console.error("Failed to save history", err);
+        }
+      }
     } catch (error) {
       console.error(error);
       alert("Failed to generate content.");
