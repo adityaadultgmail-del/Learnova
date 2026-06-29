@@ -81,6 +81,13 @@ service cloud.firestore {
         resource.data.userId == request.auth.uid;
     }
 
+    // ─── Session Invites ──────────────────────────────────────────────────────
+    // A doc per user — written by the inviter, read/deleted by the invitee
+    match /sessionInvites/{uid} {
+      allow read, delete: if isLoggedIn() && isOwner(uid);
+      allow create, update: if isLoggedIn();
+    }
+
     // ─── Study Sessions ───────────────────────────────────────────────────────
     // Participants can read/write the session doc and its turns subcollection
     match /studySessions/{sessionId} {

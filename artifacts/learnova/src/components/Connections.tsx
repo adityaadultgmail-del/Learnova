@@ -4,13 +4,14 @@ import { useAuth } from "../lib/auth";
 import { db } from "../lib/firebase";
 import {
   collection, query, where, onSnapshot, doc,
-  setDoc, getDocs, updateDoc,
+  setDoc, getDocs, updateDoc, deleteDoc,
 } from "firebase/firestore";
 import {
   Users, Copy, Check, Search, MessageCircle,
   X, UserCheck, Loader2, Hash, UserPlus, Clock, AlertCircle, BookOpen
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useNotifications } from "../lib/notifications";
 
 interface FriendRequest {
   id: string;
@@ -49,6 +50,7 @@ export function Connections() {
 
   const [copied, setCopied] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const { sessionInvite } = useNotifications();
 
   const sentRef = useRef<FriendRequest[]>([]);
   const receivedRef = useRef<FriendRequest[]>([]);
@@ -195,10 +197,26 @@ export function Connections() {
   const getChatId = (uid1: string, uid2: string) => [uid1, uid2].sort().join("_");
   const getSessionId = (uid1: string, uid2: string) => [uid1, uid2].sort().join("_");
 
-  const startStudySession = (friend: FriendUser) => {
-    const sessionId = getSessionId(user!.uid, friend.uid);
+  const startStudySession = async (friend: FriendUser) => {
+    if (!user || !userData) return;
+    const sessionId = getSessionId(user.uid, friend.uid);
+    // Write an invite notification to the friend
+    try {
+      await setDoc(doc(db, "sessionInvites", friend.uid), {
+        sessionId,
+        fromUid: user.uid,
+        fromName: userData.displayName || user.email?.split("@")[0] || "A friend",
+        createdAt: new Date().toISOString(),
+      });
+    } catch { /* non-critical */ }
     navigate(`/study-session/${sessionId}?friendName=${encodeURIComponent(friend.displayName)}&friendUid=${friend.uid}`);
   };
+
+  // Clear own session invite when visiting Connections
+  useEffect(() => {
+    if (!user) return;
+    deleteDoc(doc(db, "sessionInvites", user.uid)).catch(() => {});
+  }, [user]);
 
   if (!user) {
     return (
@@ -212,6 +230,34 @@ export function Connections() {
 
   return (
     <div className="max-w-2xl mx-auto py-4 space-y-6">
+      {/* Session Invite Banner */}
+      <AnimatePresence>
+        {sessionInvite && (
+          <motion.div
+            initial={{ opacity: 0, y: -12, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -12, scale: 0.97 }}
+            className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-4 text-white shadow-lg flex items-center justify-between gap-3"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                <BookOpen className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="font-bold text-sm">Study session invite!</p>
+                <p className="text-xs text-purple-200">{sessionInvite.fromName} wants to study together</p>
+              </div>
+            </div>
+            <button
+              onClick={() => navigate(`/study-session/${sessionInvite.sessionId}?friendName=${encodeURIComponent(sessionInvite.fromName)}&friendUid=${sessionInvite.fromUid}`)}
+              className="bg-white text-purple-700 font-bold text-xs px-4 py-2 rounded-xl hover:bg-purple-50 transition-colors shrink-0"
+            >
+              Join Now →
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* User Code Card */}
       <motion.div
         initial={{ opacity: 0, y: -16 }}

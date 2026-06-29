@@ -5,7 +5,7 @@ import { useAuth } from "../lib/auth";
 import { db } from "../lib/firebase";
 import {
   doc, collection, onSnapshot, addDoc, updateDoc,
-  setDoc, getDoc, serverTimestamp, query, orderBy,
+  setDoc, getDoc, deleteDoc, query, orderBy,
 } from "firebase/firestore";
 import {
   ArrowLeft, BookOpen, Send, Loader2, Users,
@@ -58,6 +58,8 @@ export function StudySession() {
     if (!user || !sessionId) return;
     const sessionRef = doc(db, "studySessions", sessionId);
     const init = async () => {
+      // Clear any pending session invite for this user
+      try { await deleteDoc(doc(db, "sessionInvites", user.uid)); } catch { /* no-op */ }
       try {
         const snap = await getDoc(sessionRef);
         const myName = userData?.displayName || user.email?.split("@")[0] || "User";

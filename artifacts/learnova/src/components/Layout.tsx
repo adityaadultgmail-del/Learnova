@@ -8,9 +8,11 @@ import { db } from "../lib/firebase";
 import { collection, doc, setDoc } from "firebase/firestore";
 import { useModel, GROQ_MODELS, type GroqModelId } from "../lib/modelContext";
 import { useDarkMode } from "../lib/useDarkMode";
+import { useNotifications } from "../lib/notifications";
 
 export function Layout() {
   const { user, userData } = useAuth();
+  const { totalCount } = useNotifications();
   const { model, setModel } = useModel();
   const { dark, toggle: toggleDark } = useDarkMode();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -85,9 +87,14 @@ export function Layout() {
               </Link>
             )}
             {user && (
-              <Link to="/connections" className="flex items-center gap-1.5 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-secondary-600 dark:hover:text-secondary-300 transition-colors">
+              <Link to="/connections" className="relative flex items-center gap-1.5 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-secondary-600 dark:hover:text-secondary-300 transition-colors">
                 <Users className="w-4 h-4" />
                 Connect
+                {totalCount > 0 && (
+                  <span className="absolute -top-2 -right-3 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-black rounded-full flex items-center justify-center px-1 shadow-sm animate-pulse">
+                    {totalCount > 9 ? "9+" : totalCount}
+                  </span>
+                )}
               </Link>
             )}
 
@@ -214,10 +221,15 @@ export function Layout() {
               <Link
                 to="/connections"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-secondary-600 py-2"
+                className="relative flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-secondary-600 py-2"
               >
                 <Users className="w-4 h-4" />
                 Connect
+                {totalCount > 0 && (
+                  <span className="min-w-[20px] h-5 bg-red-500 text-white text-[11px] font-black rounded-full flex items-center justify-center px-1.5 shadow-sm">
+                    {totalCount > 9 ? "9+" : totalCount}
+                  </span>
+                )}
               </Link>
             )}
 
