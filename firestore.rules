@@ -1,0 +1,90 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Helper functions ──────────────────────────────────────────────────────
+    function isLoggedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return request.auth.uid == uid;
+    }
+
+    // ─── Users ────────────────────────────────────────────────────────────────
+    // Any signed-in user can read any profile (needed for friend code search)
+    // Only the owner can write their own document
+    match /users/{uid} {
+      allow read: if isLoggedIn();
+      allow create, update: if isLoggedIn() && isOwner(uid);
+      allow delete: if false;
+    }
+
+    // ─── Friend Requests ──────────────────────────────────────────────────────
+    // Read: either participant (sender or receiver)
+    // Create: sender only, and fromUid must match their own uid
+    // Update: receiver can accept/reject; sender can cancel (set to rejected)
+    // Delete: not allowed (use status field instead)
+    match /friendRequests/{requestId} {
+      allow read: if isLoggedIn() &&
+        (resource.data.fromUid == request.auth.uid ||
+         resource.data.toUid == request.auth.uid);
+
+      allow create: if isLoggedIn() &&
+        request.resource.data.fromUid == request.auth.uid;
+
+      allow update: if isLoggedIn() &&
+        (resource.data.fromUid == request.auth.uid ||
+         resource.data.toUid == request.auth.uid);
+
+      allow delete: if false;
+    }
+
+    // ─── Chats ────────────────────────────────────────────────────────────────
+    // Chat document: readable/writable by either participant
+    // Chat ID is "{uid1}_{uid2}" (sorted), so we check if auth uid is in the ID
+    match /chats/{chatId} {
+      allow read, write: if isLoggedIn() &&
+        chatId.matches('.*' + request.auth.uid + '.*');
+
+      // Messages subcollection: same participant check
+      match /messages/{msgId} {
+        allow read: if isLoggedIn() &&
+          chatId.matches('.*' + request.auth.uid + '.*');
+
+        allow create: if isLoggedIn() &&
+          chatId.matches('.*' + request.auth.uid + '.*') &&
+          request.resource.data.senderId == request.auth.uid;
+
+        allow update, delete: if false;
+      }
+    }
+
+    // ─── Study History ────────────────────────────────────────────────────────
+    match /studyHistory/{uid}/entries/{entryId} {
+      allow read, write: if isLoggedIn() && isOwner(uid);
+    }
+
+    // ─── Quizzes ─────────────────────────────────────────────────────────────
+    match /quizzes/{quizId} {
+      allow read, write: if isLoggedIn() &&
+        resource.data.userId == request.auth.uid;
+      allow create: if isLoggedIn() &&
+        request.resource.data.userId == request.auth.uid;
+    }
+
+    // ─── Premium Requests ─────────────────────────────────────────────────────
+    match /premiumRequests/{reqId} {
+      allow create: if isLoggedIn();
+      allow read, update: if isLoggedIn() &&
+        resource.data.userId == request.auth.uid;
+    }
+
+    // ─── Admin: users with role == "admin" can read everything ────────────────
+    match /{document=**} {
+      allow read: if isLoggedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+  }
+}
