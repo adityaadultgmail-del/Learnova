@@ -8,7 +8,7 @@ import {
 } from "firebase/firestore";
 import {
   Users, Copy, Check, Search, MessageCircle,
-  X, UserCheck, Loader2, Hash, UserPlus, Clock, AlertCircle
+  X, UserCheck, Loader2, Hash, UserPlus, Clock, AlertCircle, BookOpen
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -193,6 +193,12 @@ export function Connections() {
   };
 
   const getChatId = (uid1: string, uid2: string) => [uid1, uid2].sort().join("_");
+  const getSessionId = (uid1: string, uid2: string) => [uid1, uid2].sort().join("_");
+
+  const startStudySession = (friend: FriendUser) => {
+    const sessionId = getSessionId(user!.uid, friend.uid);
+    navigate(`/study-session/${sessionId}?friendName=${encodeURIComponent(friend.displayName)}&friendUid=${friend.uid}`);
+  };
 
   if (!user) {
     return (
@@ -290,13 +296,22 @@ export function Connections() {
                             <p className="text-xs text-slate-400 dark:text-slate-500 font-mono"># {friend.userCode}</p>
                           </div>
                         </div>
-                        <button
-                          onClick={() => navigate(`/chat/${getChatId(user.uid, friend.uid)}?friendName=${encodeURIComponent(friend.displayName)}&friendUid=${friend.uid}`)}
-                          className="flex items-center gap-2 bg-[#0D3B94] hover:bg-[#0a2f7a] text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-colors"
-                        >
-                          <MessageCircle className="w-3.5 h-3.5" />
-                          Chat
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => startStudySession(friend)}
+                            className="flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-colors"
+                          >
+                            <BookOpen className="w-3.5 h-3.5" />
+                            Study
+                          </button>
+                          <button
+                            onClick={() => navigate(`/chat/${getChatId(user.uid, friend.uid)}?friendName=${encodeURIComponent(friend.displayName)}&friendUid=${friend.uid}`)}
+                            className="flex items-center gap-2 bg-[#0D3B94] hover:bg-[#0a2f7a] text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-colors"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            Chat
+                          </button>
+                        </div>
                       </motion.div>
                     ))}
                   </div>

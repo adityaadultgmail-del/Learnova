@@ -10,6 +10,7 @@ import { SmartRevision } from "./components/SmartRevision";
 import { History } from "./components/History";
 import { Connections } from "./components/Connections";
 import { Chat } from "./components/Chat";
+import { StudySession } from "./components/StudySession";
 import { AuthProvider } from "./lib/auth";
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="history" element={<History />} />
           <Route path="connections" element={<Connections />} />
           <Route path="chat/:chatId" element={<Chat />} />
+          <Route path="study-session/:sessionId" element={<StudySession />} />
         </Route>
       </Routes>
     </AuthProvider>

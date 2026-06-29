@@ -174,4 +174,23 @@ Return a JSON object:
   }
 });
 
+router.post("/study/ask", async (req, res) => {
+  try {
+    const { question, model: requestedModel } = req.body;
+    if (!question) {
+      return res.status(400).json({ error: "question is required" });
+    }
+    const groq = getGroq();
+    const model = resolveModel(requestedModel);
+    const system = `You are Learnova AI, a friendly and knowledgeable study assistant helping students understand difficult concepts. 
+Answer clearly and concisely. Use simple language. If helpful, use short examples. 
+Do NOT use markdown formatting — respond in plain paragraphs. Keep answers focused and under 250 words.`;
+    const answer = await chat(groq, system, question, model, false);
+    res.json({ answer: answer.trim() });
+  } catch (error: any) {
+    req.log.error({ err: error }, "Error in /api/study/ask");
+    res.status(500).json({ error: error.message || "Internal server error" });
+  }
+});
+
 export default router;
