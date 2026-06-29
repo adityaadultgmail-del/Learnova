@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { ChevronDown, Moon, Sun, Menu, X, History } from "lucide-react";
+import { ChevronDown, Moon, Sun, Menu, X, History, Users } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "../lib/auth";
 import { LoginModal } from "./LoginModal";
@@ -82,6 +82,12 @@ export function Layout() {
               <Link to="/history" className="flex items-center gap-1.5 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-secondary-600 dark:hover:text-secondary-300 transition-colors">
                 <History className="w-4 h-4" />
                 History
+              </Link>
+            )}
+            {user && (
+              <Link to="/connections" className="flex items-center gap-1.5 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-secondary-600 dark:hover:text-secondary-300 transition-colors">
+                <Users className="w-4 h-4" />
+                Connect
               </Link>
             )}
 
@@ -202,6 +208,16 @@ export function Layout() {
               >
                 <History className="w-4 h-4" />
                 Study History
+              </Link>
+            )}
+            {user && (
+              <Link
+                to="/connections"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-secondary-600 py-2"
+              >
+                <Users className="w-4 h-4" />
+                Connect
               </Link>
             )}
 

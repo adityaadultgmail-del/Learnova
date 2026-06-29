@@ -2,13 +2,16 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../lib/auth';
 import { auth, db } from '../lib/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { X, Trophy, LogOut, Loader2, Crown } from 'lucide-react';
+import { X, Trophy, LogOut, Loader2, Crown, Copy, Check, Hash, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 
 export function ProfileModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
   const { user, userData } = useAuth();
+  const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (isOpen && user) {
@@ -32,6 +35,14 @@ export function ProfileModal({ isOpen, onClose }: { isOpen: boolean, onClose: ()
 
   const totalScore = quizzes.reduce((sum, q) => sum + q.score, 0);
   const totalQuestions = quizzes.reduce((sum, q) => sum + q.totalQuestions, 0);
+
+  const copyCode = () => {
+    if (userData?.userCode) {
+      navigator.clipboard.writeText(userData.userCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -70,7 +81,27 @@ export function ProfileModal({ isOpen, onClose }: { isOpen: boolean, onClose: ()
               </div>
             </div>
 
-            <div className="bg-slate-50 dark:bg-slate-700/60 rounded-2xl p-5 mb-6 border border-slate-100 dark:border-slate-600">
+            {/* Friend Code */}
+            {userData?.userCode && (
+              <div className="bg-gradient-to-r from-[#0D3B94] to-[#1a52c9] rounded-2xl p-4 mb-5">
+                <div className="flex items-center gap-1.5 mb-1.5">
+                  <Hash className="w-3.5 h-3.5 text-yellow-300" />
+                  <span className="text-xs font-semibold text-blue-200">Your Friend Code</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-black tracking-widest text-yellow-300 font-mono">{userData.userCode}</span>
+                  <button
+                    onClick={copyCode}
+                    className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 transition-colors px-3 py-1.5 rounded-lg text-xs font-bold text-white"
+                  >
+                    {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copied ? "Copied!" : "Copy"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="bg-slate-50 dark:bg-slate-700/60 rounded-2xl p-5 mb-4 border border-slate-100 dark:border-slate-600">
               <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2">
                 <Trophy className="w-4 h-4 text-secondary-500" /> Your Stats
               </h3>
@@ -92,6 +123,14 @@ export function ProfileModal({ isOpen, onClose }: { isOpen: boolean, onClose: ()
                 </div>
               )}
             </div>
+
+            {/* Connections Button */}
+            <button
+              onClick={() => { onClose(); navigate("/connections"); }}
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-[#0D3B94] dark:text-blue-400 font-bold rounded-xl transition-colors mb-3"
+            >
+              <Users className="w-4 h-4" /> My Connections
+            </button>
 
             <button 
               onClick={() => {

@@ -8,6 +8,8 @@ import { DoubtSolving } from "./components/DoubtSolving";
 import { StudyPlans } from "./components/StudyPlans";
 import { SmartRevision } from "./components/SmartRevision";
 import { History } from "./components/History";
+import { Connections } from "./components/Connections";
+import { Chat } from "./components/Chat";
 import { AuthProvider } from "./lib/auth";
 
 export default function App() {
@@ -23,6 +25,8 @@ export default function App() {
           <Route path="study-plans" element={<StudyPlans />} />
           <Route path="smart-revision" element={<SmartRevision />} />
           <Route path="history" element={<History />} />
+          <Route path="connections" element={<Connections />} />
+          <Route path="chat/:chatId" element={<Chat />} />
         </Route>
       </Routes>
     </AuthProvider>

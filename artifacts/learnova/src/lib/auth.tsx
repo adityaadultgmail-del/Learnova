@@ -9,6 +9,7 @@ interface UserData {
   displayName?: string;
   role: string;
   premiumStatus: string;
+  userCode?: string;
 }
 
 interface AuthContextType {
@@ -19,18 +20,31 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({ user: null, userData: null, loading: true });
 
+function generateUserCode(): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+}
+
 async function ensureUserDoc(u: User) {
   const userRef = doc(db, 'users', u.uid);
   const docSnap = await getDoc(userRef);
   if (docSnap.exists()) {
-    return docSnap.data() as UserData;
+    const data = docSnap.data() as UserData;
+    if (!data.userCode) {
+      const userCode = generateUserCode();
+      await setDoc(userRef, { userCode }, { merge: true });
+      return { ...data, userCode };
+    }
+    return data;
   } else {
+    const userCode = generateUserCode();
     const newData = {
       uid: u.uid,
       email: u.email || '',
       displayName: u.displayName || u.email?.split('@')[0] || 'User',
       role: 'user',
       premiumStatus: 'none',
+      userCode,
       createdAt: new Date().toISOString()
     };
     await setDoc(userRef, newData);
